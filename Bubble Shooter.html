@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Shooter</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #222;
+        }
+
+        canvas {
+            display: block;
+            margin: auto;
+            background-color: #444;
+            border: 1px solid #fff;
+        }
+
+        .score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="score">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = 480;
+        canvas.height = 640;
+
+        let score = 0;
+        let bubbles = [];
+
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height - 30,
+            radius: 10,
+            color: "yellow",
+            dx: 0
+        };
+
+        function createBubble() {
+            const radius = Math.random() * 20 + 10;
+            const x = Math.random() * (canvas.width - radius * 2) + radius;
+            const y = -radius;
+            const color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+            const speed = Math.random() * 2 + 1;
+
+            bubbles.push({ x, y, radius, color, speed });
+        }
+
+        function drawPlayer() {
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fillStyle = player.color;
+            ctx.fill();
+            ctx.closePath();
+        }
+
+        function drawBubbles() {
+            for (const bubble of bubbles) {
+                ctx.beginPath();
+                ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+                ctx.fillStyle = bubble.color;
+                ctx.fill();
+                ctx.closePath();
+            }
+        }
+
+        function moveBubbles() {
+            for (let i = 0; i < bubbles.length; i++) {
+                bubbles[i].y += bubbles[i].speed;
+
+                if (bubbles[i].y - bubbles[i].radius > canvas.height) {
+                    bubbles.splice(i, 1);
+                }
+            }
+        }
+
+        function checkCollision() {
+            for (let i = 0; i < bubbles.length; i++) {
+                const bubble = bubbles[i];
+                const dx = player.x - bubble.x;
+                const dy = player.y - bubble.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < player.radius + bubble.radius) {
+                    bubbles.splice(i, 1);
+                    score++;
+                    updateScore();
+                }
+            }
+        }
+
+        function updateScore() {
+            document.getElementById("score").textContent = score;
+        }
+
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawPlayer();
+            drawBubbles();
+            moveBubbles();
+            checkCollision();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function handleKeydown(e) {
+            if (e.key === "ArrowLeft") {
+                player.dx = -5;
+            } else if (e.key === "ArrowRight") {
+                player.dx = 5;
+            }
+        }
+
+        function handleKeyup(e) {
+            if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+                player.dx = 0;
+            }
+        }
+
+        function updatePlayerPosition() {
+            player.x += player.dx;
+
+            if (player.x - player.radius < 0) {
+                player.x = player.radius;
+            } else if (player.x + player.radius > canvas.width) {
+                player.x = canvas.width - player.radius;
+            }
+
+            requestAnimationFrame(updatePlayerPosition);
+        }
+
+        setInterval(createBubble, 1000);
+        document.addEventListener("keydown", handleKeydown);
+        document.addEventListener("keyup", handleKeyup);
+
+        updatePlayerPosition();
+        gameLoop();
+    </script>
+</body>
+</html>
