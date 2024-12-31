@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Racing Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: white;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 400px;
+            height: 600px;
+            margin: 50px auto;
+            border: 5px solid #fff;
+            background: #555;
+            overflow: hidden;
+        }
+
+        #playerCar {
+            position: absolute;
+            width: 50px;
+            height: 100px;
+            bottom: 20px;
+            left: 175px;
+            background-color: red;
+            border-radius: 5px;
+        }
+
+        .oppositeCar {
+            position: absolute;
+            width: 50px;
+            height: 100px;
+            background-color: blue;
+            border-radius: 5px;
+        }
+
+        #score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+        }
+
+        #controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .controlButton {
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 18px;
+            border: none;
+            background-color: #000;
+            color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .controlButton:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="playerCar"></div>
+        <div id="score">Score: 0</div>
+    </div>
+    <div id="controls">
+        <button class="controlButton" onclick="moveLeft()">Left</button>
+        <button class="controlButton" onclick="moveRight()">Right</button>
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById("gameContainer");
+        const playerCar = document.getElementById("playerCar");
+        const scoreDisplay = document.getElementById("score");
+        let score = 0;
+        let gameInterval;
+
+        // Player car movement
+        function moveLeft() {
+            const currentLeft = parseInt(window.getComputedStyle(playerCar).left);
+            if (currentLeft > 0) {
+                playerCar.style.left = currentLeft - 25 + "px";
+            }
+        }
+
+        function moveRight() {
+            const currentLeft = parseInt(window.getComputedStyle(playerCar).left);
+            if (currentLeft < gameContainer.offsetWidth - playerCar.offsetWidth) {
+                playerCar.style.left = currentLeft + 25 + "px";
+            }
+        }
+
+        // Generate opposite cars
+        function generateOppositeCar() {
+            const oppositeCar = document.createElement("div");
+            oppositeCar.classList.add("oppositeCar");
+            oppositeCar.style.left = Math.floor(Math.random() * (gameContainer.offsetWidth - 50)) + "px";
+            oppositeCar.style.top = "-100px";
+            gameContainer.appendChild(oppositeCar);
+
+            return oppositeCar;
+        }
+
+        // Check collision
+        function checkCollision(player, opposite) {
+            const playerRect = player.getBoundingClientRect();
+            const oppositeRect = opposite.getBoundingClientRect();
+
+            return !(
+                playerRect.bottom < oppositeRect.top ||
+                playerRect.top > oppositeRect.bottom ||
+                playerRect.right < oppositeRect.left ||
+                playerRect.left > oppositeRect.right
+            );
+        }
+
+        // Game loop
+        function startGame() {
+            score = 0;
+            scoreDisplay.textContent = `Score: ${score}`;
+
+            gameInterval = setInterval(() => {
+                // Increase score
+                score++;
+                scoreDisplay.textContent = `Score: ${score}`;
+
+                // Generate and move opposite cars
+                if (Math.random() < 0.02) {
+                    const oppositeCar = generateOppositeCar();
+
+                    let moveInterval = setInterval(() => {
+                        const currentTop = parseInt(window.getComputedStyle(oppositeCar).top);
+
+                        if (currentTop > gameContainer.offsetHeight) {
+                            gameContainer.removeChild(oppositeCar);
+                            clearInterval(moveInterval);
+                        } else {
+                            oppositeCar.style.top = currentTop + 5 + "px";
+
+                            if (checkCollision(playerCar, oppositeCar)) {
+                                clearInterval(moveInterval);
+                                endGame();
+                            }
+                        }
+                    }, 20);
+                }
+            }, 50);
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            alert(`Game Over! Your score is ${score}`);
+            location.reload();
+        }
+
+        // Start the game on load
+        startGame();
+    </script>
+</body>
+</html>
