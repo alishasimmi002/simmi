@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Car Racing Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #000;
+        }
+
+        canvas {
+            display: block;
+            margin: auto;
+            background: #444;
+        }
+
+        .score {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="score">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = 300;
+        canvas.height = 500;
+
+        let score = 0;
+        let gameRunning = true;
+
+        const playerCar = {
+            x: canvas.width / 2 - 15,
+            y: canvas.height - 60,
+            width: 30,
+            height: 50,
+            speed: 5
+        };
+
+        const opponentCar = {
+            x: Math.random() * (canvas.width - 30),
+            y: -50,
+            width: 30,
+            height: 50,
+            speed: 3
+        };
+
+        function drawCar(car, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+        }
+
+        function moveOpponentCar() {
+            opponentCar.y += opponentCar.speed;
+            if (opponentCar.y > canvas.height) {
+                opponentCar.y = -50;
+                opponentCar.x = Math.random() * (canvas.width - opponentCar.width);
+                score++;
+            }
+        }
+
+        function checkCollision() {
+            if (
+                playerCar.x < opponentCar.x + opponentCar.width &&
+                playerCar.x + playerCar.width > opponentCar.x &&
+                playerCar.y < opponentCar.y + opponentCar.height &&
+                playerCar.y + playerCar.height > opponentCar.y
+            ) {
+                gameRunning = false;
+                alert("Game Over! Your score: " + score);
+            }
+        }
+
+        function updateScore() {
+            document.getElementById("score").textContent = score;
+        }
+
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawCar(playerCar, "blue");
+            drawCar(opponentCar, "red");
+
+            moveOpponentCar();
+            checkCollision();
+            updateScore();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function handleKeydown(e) {
+            if (e.key === "ArrowLeft" && playerCar.x > 0) {
+                playerCar.x -= playerCar.speed;
+            } else if (e.key === "ArrowRight" && playerCar.x < canvas.width - playerCar.width) {
+                playerCar.x += playerCar.speed;
+            }
+        }
+
+        document.addEventListener("keydown", handleKeydown);
+        gameLoop();
+    </script>
+</body>
+</html>
