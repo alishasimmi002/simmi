@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <conio.h>
+
+
+int main()
+{
+    int a,b,c,sum,mult,div,sub;
+
+
+    printf("enter you first number=");
+    scanf("%d",&a);
+
+    printf("\nenter your second number=");
+    scanf("%d",&b);
+
+    printf("\nenter your Third number=");
+    scanf("%d",&c);
+
+    sum=a+b+c;
+    mult=a*b*c;
+    div=a/b/c;
+    sub=a-b-c;
+
+    printf("your required sum is=%d",sum);
+    printf("\nyour required multiply value is=%d",mult);
+    printf("\nyour required divisional value is=%d",div);
+    printf("\nyour required subtracted value is=%d",sub);
+
+
+        getch();
+}

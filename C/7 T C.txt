@@ -1,0 +1,21 @@
+#include <stdio.h>
+#include <conio.h>
+
+int main()
+
+{  int a,b;
+
+    printf("enter your first value=");
+    scanf("%d",&a);
+
+    printf("enter your second value=");
+    scanf("%d",&b);
+
+    if (a>b)
+        printf("your largest number is=%d",a);
+
+    else
+        printf("your largest number is=%d",b);
+
+    getch();
+}

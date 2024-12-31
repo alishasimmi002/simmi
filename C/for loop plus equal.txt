@@ -1,0 +1,14 @@
+#include <stdio.h>
+#include <conio.h>
+
+int main()
+{
+    int x;
+    for(int x = 2; x <= 30 ; x += 5)
+  {
+  printf("%d\n",x);
+  }
+    getch();
+}
+
+

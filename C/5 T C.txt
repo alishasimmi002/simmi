@@ -1,0 +1,22 @@
+#include <stdio.h>
+#include <conio.h>
+
+
+int main()
+{
+    int a,b,sum;
+
+    printf("enter you first number=");
+    scanf("%d",&a);
+
+    printf("\nenter your second number=");
+    scanf("%d",&b);
+
+
+
+    sum=a+b;
+
+    printf("your required sum is=%d",sum);
+
+        getch();
+}
